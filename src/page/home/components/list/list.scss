@@ -1,0 +1,15 @@
+.listContainer {
+    padding: 10px;
+    background-color: #f7f7f7;
+    text-align: left;
+    height: calc(100vh - 60px);
+    overflow-y: auto;
+    img {
+        width: 16px;
+        height: 16px;
+    }
+    .sortBar{
+        padding: 5px 10px 10px;
+        text-align: right;
+    }
+}

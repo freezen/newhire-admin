@@ -1,0 +1,18 @@
+.container{
+    background-color: white;
+    padding-bottom: 5px;
+    margin: 0 10px 10px 0;
+    width: 285px;
+    display: inline-block;
+    cursor: pointer;
+    position: relative;
+    .delBtn{
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        visibility: hidden;
+    }
+    &:hover .delBtn{
+        visibility: visible;
+    }
+}

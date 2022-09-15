@@ -1,0 +1,58 @@
+header{
+    display: flex;
+    height: 60px;
+    align-items: center;
+    box-shadow: 1px 1px 10px #eee;
+    position: sticky;
+    top: 0;
+    background: white;
+    .leftBar{
+        width: 240px;
+        display: flex;
+        align-items: center;
+        padding-left: 20px;
+        .logo{
+            margin-left: 10px;
+        }
+    }
+    .rightBar{
+        display: flex;
+        width: 180px;
+        padding-right: 10px;
+        justify-content: end;
+    }
+    .midBar{
+        flex: 1;
+        text-align: left;
+        padding: 20px;
+    }
+    .modal{
+        background-color: white;
+        width: 500px;
+        height: 400px;
+        margin-left: -250px;
+        margin-top: -200px;
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        border: 1px solid #eee;
+        border-radius: 4px;
+        display: flex;
+        flex-direction: column;
+        .modal-header{
+            padding: 15px;
+            border-bottom: 0.5px solid #ddd;
+            text-align: left;
+            background-color: #f8f8f8;
+        }
+        .modal-main{
+            flex: 1;
+        }
+        .modal-footer{
+            background-color: #f1f1f1;
+            padding: 15px;
+            border-top: 0.5px solid #ddd;
+            text-align: right;
+        }
+    }
+}

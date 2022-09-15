@@ -1,0 +1,25 @@
+.navModule{
+    width: 240px;
+    height: calc(100vh - 60px);
+    .navList{
+        margin-top: 12px;
+        .navItem{
+            display: flex;
+            cursor: pointer;
+            align-items: center;
+            padding-left: 20px;
+            text-decoration: none;
+            color: black;
+            .navTitle{
+                margin-left: 12px;
+            }
+        }
+        .navItemActive{
+            background-color: rgb(229,229,229);
+        }
+        .navItem:hover{
+            opacity: .6;
+            background-color: rgb(229,229,229);
+        }
+    }
+}
