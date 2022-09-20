@@ -20,17 +20,17 @@ function App() {
       ]);
       return routes;
   };
-  if((!credentials?.token ?? '' ) && !window.location.href.includes('login')) {
-    window.location.href = '/login';
-  }
-
+  // if((!credentials?.token ?? '' ) && !window.location.href.includes('login')) {
+  //   window.location.href = '/login';
+  // }
+  const isLogin = window.location.href.includes('login')
   return (
     <div className="App">
       <BrowserRouter>
         <div className="appContainer">
-            { credentials?.token && (<Header isShowModal={isShowModal} setShowModal={setShowModal}/>)}
+            { !isLogin && (<Header isShowModal={isShowModal} setShowModal={setShowModal}/>)}
             <div className='main'>
-                { credentials?.token && (<Nav/>)}
+                { !isLogin && (<Nav/>)}
                 <App/>
             </div>
         </div>

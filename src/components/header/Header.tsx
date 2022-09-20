@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { getCredentials } from '../../utils/login';
+import { clearLogin, getCredentials } from '../../utils/login';
 import { reqConfig } from '../../utils/request';
 import './header.scss';
 
@@ -33,6 +33,13 @@ export const Header = (props: IProps) => {
         formData = new FormData()
         props.setShowModal(true)
     }
+    const login = () => {
+        if (getCredentials().token) {
+            clearLogin()
+        }
+        window.location.href = '/login';
+    }
+    
     const upload = () => {
         const xhr = new XMLHttpRequest()
         xhr.open('POST', reqConfig.url + '/video/upload')
@@ -66,8 +73,15 @@ export const Header = (props: IProps) => {
             <div className="midBar">
             </div>
             <div className="rightBar">
-                <button className="upload" onClick={showUploadModal}>
-                    Upload video
+                {
+                    getCredentials().token && (
+                        <button className="upload" onClick={showUploadModal} style={{marginRight: '10px'}}>
+                            Upload video
+                        </button>
+                    )
+                }
+                <button className="login" onClick={login}>
+                    {getCredentials().token ? 'Logout' : 'login'}
                 </button>
             </div>
             {

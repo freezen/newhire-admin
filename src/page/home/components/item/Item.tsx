@@ -1,5 +1,6 @@
-import React, { PropsWithChildren } from 'react';
+import React, { PropsWithChildren, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getCredentials } from '../../../../utils/login';
 import { post } from '../../../../utils/request';
 import './item.scss';
 
@@ -51,6 +52,8 @@ const styles = {
 
 export const Item: React.FC<Props> = ({style, data, getList}) => {
     let navigator = useNavigate();
+    const [loaded, setLoaded] = useState(false);
+
     const clickItem = () => {
         navigator('/detail');
     };
@@ -63,10 +66,14 @@ export const Item: React.FC<Props> = ({style, data, getList}) => {
         );
         getList(true)
     };
+    const loadPic = () => {
+        setLoaded(true);
+    };
     
     return (
         <div className='container' style={{...style}} onTouchEnd={clickItem}>
-            <img style={styles.picture} alt="" src={data.pic} />
+            <img style={styles.picture} alt="" src={data.pic} onLoad={loadPic}/>
+            {loaded === false && <div className='loading'/>}
             <div style={styles.title}>
                 {data.name}
             </div>
@@ -74,7 +81,8 @@ export const Item: React.FC<Props> = ({style, data, getList}) => {
                 <span style={styles.left}>
                     <img
                         alt=""
-                        src={'../../../../assets/Sam.png'}
+                        src={`../../../../assets/${data.uname}.png`}
+                        style={{borderRadius: '50%'}}
                     />
                     <span style={styles.uname}>{data.uname}</span>
                 </span>
@@ -84,7 +92,11 @@ export const Item: React.FC<Props> = ({style, data, getList}) => {
                 />
                 <span style={{marginLeft: '5px'}}>{data.likes ?? 0}</span>
             </div>
-            <img className='delBtn' onClick={delItem} alt="" src='../../../../assets/loved.png' />
+            {
+                getCredentials().token && (
+                    <img className='delBtn' onClick={delItem} alt="" src='../../../../assets/delete.png' />
+                )
+            }
         </div>
     )
 }

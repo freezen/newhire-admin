@@ -29,8 +29,6 @@ export const Admin = () => {
     }, [])
 
     return (
-        <div className='adminContainer'>
-            {users}
-        </div>
+        <div className='adminContainer' />
     )
 }

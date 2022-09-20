@@ -4,6 +4,7 @@ import { ICredentials, setCredentials } from '../../utils/login';
 import { post, reqConfig } from '../../utils/request';
 import { useNavigate } from 'react-router-dom';
 import './index.scss';
+import toast, { Toaster } from 'react-hot-toast';
 
 type Props = PropsWithChildren<{
     setHookCredentials: (val: ICredentials) => void;
@@ -66,7 +67,7 @@ export const Login: React.FC<Props> = ({setHookCredentials}) => {
         // push
         navigator('/');
       } else {
-        alert('Login failed.');
+        toast('Login failed.');
       }
     } catch (error) {
       console.error(error);
@@ -104,6 +105,7 @@ export const Login: React.FC<Props> = ({setHookCredentials}) => {
           </div>
         </div>
       </div>
+      <Toaster />
     </div>
   );
 }
