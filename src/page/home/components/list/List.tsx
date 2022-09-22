@@ -6,7 +6,16 @@ import './list.scss';
 
 export const List = () => {
     const [pageNo, setPageNo] = useState(0);
-    const [list, setList] = useState<IVideoItem[]>([]);
+    const [list, setList] = useState<IVideoItem[]>(
+        "12345678".split("").map( item => ({
+            id: Number(item + 1000),
+            uname: '',
+            name: '',
+            url: '',
+            likes: false,
+            pic: '',
+        })),
+    );
 
     async function getList(isRefresh = false, sort = false) {
         try {
@@ -21,13 +30,18 @@ export const List = () => {
                     getCredentials().id
                 }`,
             );
-            console.log('len:', res.data.length);
+            console.log('len:', res?.data?.length ?? -1);
+            if(!res || !res?.data) {
+                return;
+            }
             const data = res.data;
             if (isRefresh) {
                 // handle refresh mode, show the 1st page
                 setList(data);
+                console.log('refresh')
                 setPageNo(1);
             } else if (data && data.length > 0) {
+                console.log('concat')
                 // handle loadmore mode, concat the next page
                 setList([...list, ...data]);
                 setPageNo(pageNum + 1);
@@ -52,6 +66,7 @@ export const List = () => {
         };
     }
     const loadMore = debounce(() => {
+        console.log('loadMore!!!')
         getList()
     })
 
@@ -62,6 +77,7 @@ export const List = () => {
     }
 
     const changeCheck = (e: React.ChangeEvent<any>) => {
+        console.log('changeCheck')
         if(e.target.checked){
             getList(true, true)
         } else {
@@ -72,7 +88,12 @@ export const List = () => {
     if (!list.length) {
         return null;
     }
-        
+    let style = {}
+    if(document.body.clientWidth > 1300){
+        style = {
+            width: '295px'
+        }
+    }
     return (
         <div className='listContainer' onScroll={scroll}>
             <div className='sortBar'>
@@ -86,6 +107,7 @@ export const List = () => {
                             key={item.id}
                             data={item}
                             getList={getList}
+                            style={style}
                         />
                     )
                 })

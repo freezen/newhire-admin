@@ -1,37 +1,69 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
+import toast, { Toaster } from 'react-hot-toast';
 import { clearLogin, getCredentials } from '../../utils/login';
 import { reqConfig } from '../../utils/request';
 import './header.scss';
 
 interface IProps {
-    isShowModal: boolean, 
-    setShowModal: (isShowModal:boolean) => void 
+    isUploaded: boolean, 
+    setIsUploaded: (isShowModal:boolean) => void 
 }
 
 type TFileChange = React.ChangeEvent<HTMLInputElement>
 
 export const Header = (props: IProps) => {
+    let formData = useRef<FormData | null>(null);
+    const [isShowModal, setShowModal] = useState(false)
+    let [progress, setProgress] = useState(0);
+    const [picInfo, setPicInfo] = useState({
+        name: '',
+        type: '',
+    });
+    const [videoInfo, setVideoInfo] = useState({
+        name: '',
+        type: '',
+    });
     // upload the files as multipart
-    let formData = new FormData()
     const pic = useRef<HTMLInputElement>(null);
     const video = useRef<HTMLInputElement>(null);
     const selectPic = (event: TFileChange) => {
-        console.log(event.target.files);
+        console.log('files:',event.target.files);
         const file = event.target.files?.[0]
+        console.log('file:', file);
+        setPicInfo({
+            name: file?.name ?? '',
+            type: file?.type ?? '',
+        })
         if(file){
-            formData.append(file.name, file)
+            if (!formData.current) {
+                // upload the files as multipart
+                formData.current = new FormData();
+            }
+            formData.current.append(file.name, file)
+            console.log('formData.current:', formData.current)
         }
     }
-    const selectFile = (event: TFileChange) => {
+    const selectVideo = (event: TFileChange) => {
         const file = event.target.files?.[0]
+        setVideoInfo({
+            name: file?.name ?? '',
+            type: file?.type ?? '',
+        })
         if(file){
-            formData.append(file.name, file)
+            if (!formData.current) {
+                // upload the files as multipart
+                formData.current = new FormData();
+            }
+            formData.current.append(file.name, file)
+        console.log('formData.current:', formData.current)
+
         }
     }
     const showUploadModal = () => {
         // upload the files as multipart
-        formData = new FormData()
-        props.setShowModal(true)
+        formData.current = null;
+        setProgress(0);
+        setShowModal(true)
     }
     const login = () => {
         if (getCredentials().token) {
@@ -46,20 +78,72 @@ export const Header = (props: IProps) => {
         // add the token & key to go through the auth check
         xhr.setRequestHeader('token', getCredentials().token);
         xhr.setRequestHeader('key', getCredentials().key);
+        let interval: any;
+        xhr.onerror = () => {
+            toast('Upload fails: ' + xhr.responseText ?? ' No response.'); 
+            clearInterval(interval);
+        };
         xhr.onreadystatechange = function(){
+            console.log('xhr.readyState:', xhr.readyState, 'xhr.status:', xhr.status);
+
             if(xhr.readyState === 4 && xhr.status === 200){
-                cleanUploadInput()
+                const res = JSON.parse(xhr.responseText) as any;
+                if (res.success !== true) {
+                    toast('Upload failed: ' + res.message)
+                } else {
+                    cleanUploadInput()
+                    setProgress(100);
+                    toast('Upload success!')
+                    setTimeout(() => {
+                        setShowModal(false)
+                        props.setIsUploaded(!props.isUploaded);
+                    }, 1000)
+                    
+                }
             }
         }
-        xhr.send(formData)
+        setProgress(0);
+        console.log('formData.current:', formData.current)
+        xhr.send(formData.current)
+        let p = 0;
+        interval = setInterval(() => {
+        if (p >= 76) {
+            clearInterval(interval);
+        } else {
+            p += parseInt(Math.random() * 5 + '', 10);
+            setProgress(p > 76 ? 76 : p);
+        }
+        }, parseInt(Math.random() * 20 + '', 10) * 100);
     }
     function cleanUploadInput() {
-        props.setShowModal(false)
+        setProgress(0);
+        setPicInfo({
+            name: '',
+            type: '',
+        })
+        setVideoInfo({
+            name: '',
+            type: '',
+        })
         if(pic && pic.current && pic.current.value){
             pic.current.value = ''
         }
         if(video && video.current && video.current.value){
             video.current.value = ''
+        }
+    }
+    function cancel() {
+        cleanUploadInput();
+        setShowModal(false)
+    }
+    function clickSelectPic() {
+        if(pic && pic.current){
+            pic.current.click();
+        }
+    }
+    function clickSelectVideo() {
+        if(video && video.current){
+            video.current.click();
         }
     }
     return (
@@ -85,22 +169,83 @@ export const Header = (props: IProps) => {
                 </button>
             </div>
             {
-                props.isShowModal && (
+                isShowModal && (
                     <div className='modal' >
-                        <div className='modal-header'>
-                            Upload video
-                        </div>
-                        <div className='modal-main'>
-                            <input type={"file"} id='pic' ref={pic} className="fileInput" style={{marginBottom: '20px'}} onChange={selectPic}/>
-                            <input type={"file"} id='video' ref={video} className="fileInput" onChange={selectFile}/>
-                        </div>
-                        <div className='modal-footer'>
-                            <button onClick={cleanUploadInput}>cancel</button>
-                            <button onClick={upload} style={{marginLeft: '10px', color: 'white', backgroundColor: '#065fd4'}}>Upload</button>
+                        <div className='modalContainer' >
+                            <div className='modal-header'>
+                                Upload video
+                            </div>
+                            <div className='modal-main'>
+                                <input type={"file"} accept="image/jpeg,image/jpg,image/png,image/webp,image/gif,image/bmp" id='pic' ref={pic} className="fileInput" onChange={selectPic}/>
+                                <input type={"file"} accept="video/mp4,video/mpg,video/mov" id='video' ref={video} className="fileInput" onChange={selectVideo}/>
+                                {progress === 0 && (<div className="boxs">
+                                    <div
+                                        className="picFile boxBlock"
+                                        onClick={clickSelectPic}
+                                    >
+                                        <div className="box boxPic">
+                                            <img
+                                                className="cameraIcon"
+                                                src={'../../../assets/camera.png'}
+                                            />
+                                            {picInfo.name && (
+                                                <img
+                                                    className="checkedIcon"
+                                                    src={'../../../assets/checked.png'}
+                                                />
+                                            )}
+                                        </div>
+                                        <div className="label">
+                                            <span className="labelText">Select the cover picture</span>
+                                        </div>
+                                    </div>
+                                    <div
+                                        className="videoFile boxBlock"
+                                        onClick={clickSelectVideo}
+                                    >
+                                        <div className="box boxVideo">
+                                            <img
+                                                className="videoIcon"
+                                                src={'../../../assets/video.png'}
+                                            />
+                                            {videoInfo.name && (
+                                                <img
+                                                    className="checkedIcon"
+                                                    src={'../../../assets/checked.png'}
+                                                />
+                                            )}
+                                        </div>
+                                        <div className="label">
+                                            <span className="labelText">Select training video</span>
+                                        </div>
+                                    </div>
+                                </div>)}
+                                {progress !== 0 && (
+                                    <div className="progressBar">
+                                        <div className='progressTitle'>
+                                            <span className='progressTitleText'>Upload 2 files</span>
+                                        </div>
+                                        <div className="progress">
+                                            <div
+                                                className='progressInner'
+                                                style={{width: progress + '%'}}
+                                            />
+                                        </div>
+                                        <div className="progressNumerText">
+                                            {progress < 100 ? progress + '%' : 'Done'}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                            <div className='modal-footer'>
+                                <button onClick={cancel}>cancel</button>
+                                <button onClick={upload} style={{marginLeft: '10px', color: 'white', backgroundColor: '#065fd4'}}>Upload</button>
+                            </div>
                         </div>
                     </div>
                 )
             }
+            <Toaster />
         </header>
     )
 }

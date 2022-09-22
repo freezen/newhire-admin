@@ -9,7 +9,7 @@ import { Detail } from './page/detail';
 import { Login } from './page/login';
 import { getCredentials, ICredentials } from './utils/login';
 function App() {
-  const [isShowModal, setShowModal] = useState(false)
+  const [isUploaded, setIsUploaded] = useState(false)
   const [credentials, setCredentials] = useState(null as unknown as ICredentials)
   const App = () => {
       const routes = useRoutes([
@@ -28,7 +28,7 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <div className="appContainer">
-            { !isLogin && (<Header isShowModal={isShowModal} setShowModal={setShowModal}/>)}
+            { !isLogin && (<Header isUploaded={isUploaded} setIsUploaded={setIsUploaded}/>)}
             <div className='main'>
                 { !isLogin && (<Nav/>)}
                 <App/>

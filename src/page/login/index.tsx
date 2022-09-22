@@ -20,7 +20,7 @@ export const Login: React.FC<Props> = ({setHookCredentials}) => {
         marginBottom: '100px',
     },
     title: {
-        fontFamily: 'Ping Fang SC, SimHei',
+        fontFamily: 'Roboto, Arial, sans-serif',
         fontWeight: 'bold',
         fontSize: '30px',
         color: '#888',
@@ -57,12 +57,13 @@ export const Login: React.FC<Props> = ({setHookCredentials}) => {
       });
       const data = res?.data ?? {};
       if (data.success === true) {
-        setCredentials(name, data.token, data.auth, data.id);
+        setCredentials(name, data.token, data.auth, data.id, data.expireTime);
         setHookCredentials({
             key: name,
             token: data.token,
             auth: data.auth, 
             id: data.id,
+            expireTime: data.expireTime,
         })
         // push
         navigator('/');

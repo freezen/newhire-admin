@@ -21,14 +21,9 @@ type Props = PropsWithChildren<{
 }>;
 
 const styles = {
-    picture: {
-        height: '200px',
-        width: '100%',
-        overflow: 'hidden',
-    },
     title: {
-        padding: '5px',
-        fontFamily: 'Ping Fang SC, SimHei',
+        padding: '3px 5px',
+        fontFamily: 'Roboto, Arial, sans-serif',
         fontSize: '16px',
     },
     bottom: {
@@ -53,7 +48,27 @@ const styles = {
 export const Item: React.FC<Props> = ({style, data, getList}) => {
     let navigator = useNavigate();
     const [loaded, setLoaded] = useState(false);
-
+    if(!data.pic){
+        return (
+            <div key={data.id} className='container' style={{...style}}>
+               <div className='loading'>
+                    <div className='rect' />
+                    <div className='rect' />
+                    <div className='rect' />
+                    <div className='rect' />
+                    <div className='rect' />
+                    <div className='rect' />
+                    <div className='rectContainer'>
+                        <div className='rect circle' />
+                        <div style={{flex: 1}}>
+                            <div className='rect' style={{marginTop: '10px', height: '15px', marginBottom: '10px'}}/>
+                            <div className='rect' style={{marginTop: '10px', height: '15px'}}/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        )
+    }
     const clickItem = () => {
         navigator('/detail');
     };
@@ -71,9 +86,16 @@ export const Item: React.FC<Props> = ({style, data, getList}) => {
     };
     
     return (
-        <div className='container' style={{...style}} onTouchEnd={clickItem}>
-            <img style={styles.picture} alt="" src={data.pic} onLoad={loadPic}/>
-            {loaded === false && <div className='loading'/>}
+        <div key={data.id} className='container' style={{...style}} onTouchEnd={clickItem}>
+            <img className='picture' alt="" src={data.pic} onLoad={loadPic}/>
+            {loaded === false && (<div className='loading'>
+                <div className='rect' />
+                <div className='rect' />
+                <div className='rect' />
+                <div className='rect' />
+                <div className='rect' />
+                <div className='rect' />
+            </div>)}
             <div style={styles.title}>
                 {data.name}
             </div>
